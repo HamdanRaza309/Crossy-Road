@@ -8,6 +8,7 @@ public class GameManager : MonoBehaviour {
   [SerializeField] private Transform character;
   [SerializeField] private Transform characterModel;
   [SerializeField] private Transform terrainHolder;
+  [SerializeField] private TMPro.TextMeshProUGUI scoreText;
 
   [Header("Terrain objects")]
   [SerializeField] private Grass grassPrefab;
@@ -26,6 +27,7 @@ public class GameManager : MonoBehaviour {
   private Vector2Int characterPos;
   private int spawnLocation;
   private List<(float terrainHeight, HashSet<int> locations)> obstacles = new();
+  private int score = 0;
 
   void Awake() {
     // Initialise all the starting state.
@@ -38,6 +40,11 @@ public class GameManager : MonoBehaviour {
     // Reset character position
     characterPos = new Vector2Int(0, -1);
     character.position = new Vector3(0, 0.2f, -1);
+    character.GetComponent<Character>().Reset();
+
+    // Reset the score
+    score = 0;
+    scoreText.text = "0";
 
     // Remove all terrain
     obstacles.Clear();
@@ -107,6 +114,11 @@ public class GameManager : MonoBehaviour {
           characterPos = destination;
           // Call coroutine to move the character object.
           StartCoroutine(MoveCharacter());
+          // Update score if necessary.
+          if ((destination.y + 1) > score) {
+            score = destination.y + 1;
+            scoreText.text = $"{score}";
+          }
         }
 
         // Spawn new obstacles if necessary
@@ -114,6 +126,11 @@ public class GameManager : MonoBehaviour {
           SpawnObstacle();
         }
       }
+    }
+
+    // Can only use our shortcut to reset the level when we're dead.
+    if (gameState == GameState.Dead && Keyboard.current.spaceKey.wasPressedThisFrame) {
+      NewLevel();
     }
 
     // Camera follow at (+2, 4, -3)
@@ -172,4 +189,10 @@ public class GameManager : MonoBehaviour {
       gameState = GameState.Ready;
     }
   }
+
+  public void PlayerCollision() {
+    // When we collide, we'll simply update the game state.
+    gameState = GameState.Dead;
+  }
 }
+
