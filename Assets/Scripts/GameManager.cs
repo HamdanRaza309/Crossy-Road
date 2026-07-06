@@ -26,7 +26,7 @@ public class GameManager : MonoBehaviour {
   private GameState gameState;
   private Vector2Int characterPos;
   private int spawnLocation;
-  private List<(float terrainHeight, HashSet<int> locations)> obstacles = new();
+  private List<(float terrainHeight, HashSet<int> locations, GameObject obj)> obstacles = new();
   private int score = 0;
 
   void Awake() {
@@ -66,11 +66,13 @@ public class GameManager : MonoBehaviour {
     if (Random.value < roadProbability) {
       // Create road with terrain height of 0.1f.
       Road road = Instantiate(roadPrefab, terrainHolder);
-      obstacles.Add((0.1f, road.Init(spawnLocation)));
+      obstacles.Add((0.1f, road.Init(spawnLocation), road.gameObject));
+      road.gameObject.name = $"{spawnLocation} - Road";
     } else {
       // Create grass with terrain height of 0.2f.
       Grass grass = Instantiate(grassPrefab, terrainHolder);
-      obstacles.Add((0.2f, grass.Init(spawnLocation)));
+      obstacles.Add((0.2f, grass.Init(spawnLocation), grass.gameObject));
+      grass.gameObject.name = $"{spawnLocation} - Grass";
     }
 
     // Update to the next free location
@@ -124,6 +126,17 @@ public class GameManager : MonoBehaviour {
         // Spawn new obstacles if necessary
         while (obstacles.Count < (characterPos.y + spawnDistance)) {
           SpawnObstacle();
+
+          // Destroy old terrain objects as we progress
+          int oldIndex = characterPos.y - spawnDistance;
+          if ((oldIndex >= 0) && (obstacles[oldIndex].obj != null)) {
+            Destroy(obstacles[oldIndex].obj);
+          }
+        }
+
+        // If we've gone back too far end the game.
+        if (characterPos.y < (score - 10)) {
+          character.GetComponent<Character>().Kill(character.transform.position + new Vector3(0, 0.2f, 0.5f));
         }
       }
     }
