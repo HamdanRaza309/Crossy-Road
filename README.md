@@ -1,4 +1,4 @@
-# 🐔 Crossy Road (Unity)
+# 🐕 Crossy Road (Unity)
 
 A 3D recreation of the classic **Crossy Road** built in **Unity** using C#. The project features procedural terrain generation, infinite gameplay, smooth grid-based movement, dynamic vehicle spawning, collision detection, and a responsive camera system.
 
@@ -162,23 +162,6 @@ Assets/
 | A / ← | Move Left |
 | D / → | Move Right |
 | R / Space | Restart (After Death) |
-
----
-
-## 📸 Screenshots
-
-Add your gameplay screenshots here.
-
-Example:
-
-```
-Screenshots/
-    MainMenu.png
-    Gameplay.png
-    ProceduralGeneration.png
-    Collision.png
-    DeathEffect.png
-```
 
 ---
 
